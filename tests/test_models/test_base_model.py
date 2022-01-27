@@ -123,3 +123,12 @@ class TestBaseModel(AssertFunc):
         self.assertTrue(isinstance(created_at, str))
         self.assertEqual(updated_at, inst.updated_at.isoformat())
         self.assertEqual(created_at, inst.created_at.isoformat())
+
+    def test_model_from_dictionary(self):
+        '''Test the recreation of an instance from a dictionary.'''
+        inst = BaseModel()
+        _dict = inst.to_dict()
+        inst1 = BaseModel(**_dict)
+        self.assertEqual(inst1.id, inst.id)
+        self.assertEqual(inst1.created_at, inst.created_at)
+        self.assertEqual(inst1.updated_at, inst.updated_at)
