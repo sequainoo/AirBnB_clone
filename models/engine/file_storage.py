@@ -5,6 +5,8 @@ Provides FileStorage class to store and retrive instances/objects
 '''
 
 import json
+import os
+from models import base_model
 
 class FileStorage():
     '''File storage class.
@@ -13,6 +15,12 @@ class FileStorage():
     Deserializes JSON file to instances.
 
     '''
+
+    #: Class name and value pairs to help reload instances
+    __CLASSES = {
+        'BaseModel': base_model.BaseModel
+    }
+    
     #: path to the JSON file ex: file.json
     __file_path = './data/file_db.json'
 
@@ -43,4 +51,14 @@ class FileStorage():
         Deserializes the JSON file to __objects only if the file exists.
         Otherwise, do nothing.
         '''
-        pass
+        file_path = FileStorage.__file_path
+        if os.path.exists(file_path):
+            data = {}
+            
+            with open(file_path, mode='r', encoding='utf-8') as file_obj:
+                data = json.load(file_obj)
+
+            for key, _dict in data.items():
+                _class = FileStorage.__CLASSES[_dict['__class__']]
+                obj = _class(**_dict)
+                FileStorage.__objects[key] = obj
