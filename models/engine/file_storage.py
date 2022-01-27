@@ -20,11 +20,12 @@ class FileStorage():
 
     def all(self):
         '''Returns the dictionary __objects.'''
-        return self.__class__.__objects
+        return FileStorage.__objects
     
     def new(self, obj):
         '''Sets in __objects the obj with key <obj class name>.id.'''
-        pass
+        key = obj.__class__.__name__ + '.' + obj.id
+        FileStorage.__objects[key] = obj
     
     def save(self):
         '''Serializes __objects to the JSON file (path: __file_path)'''
