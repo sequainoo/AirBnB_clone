@@ -8,6 +8,7 @@ import json
 import os
 from models import base_model
 
+
 class FileStorage():
     '''File storage class.
 
@@ -20,7 +21,7 @@ class FileStorage():
     __CLASSES = {
         'BaseModel': base_model.BaseModel
     }
-    
+
     #: path to the JSON file ex: file.json
     __file_path = './data/file_db.json'
 
@@ -30,22 +31,22 @@ class FileStorage():
     def all(self):
         '''Returns the dictionary __objects.'''
         return FileStorage.__objects
-    
+
     def new(self, obj):
         '''Sets in __objects the obj with key <obj class name>.id.'''
         key = obj.__class__.__name__ + '.' + obj.id
         FileStorage.__objects[key] = obj
-    
+
     def save(self):
         '''Serializes __objects to the JSON file (path: __file_path)'''
         file_path = FileStorage.__file_path
         data = {}
-        for key,obj in FileStorage.__objects.items():
+        for key, obj in FileStorage.__objects.items():
             data[key] = obj.to_dict()
-        
+
         with open(file_path, mode='w', encoding='utf-8') as file_obj:
             json.dump(data, file_obj)
-    
+
     def reload(self):
         '''
         Deserializes the JSON file to __objects only if the file exists.
@@ -54,7 +55,7 @@ class FileStorage():
         file_path = FileStorage.__file_path
         if os.path.exists(file_path):
             data = {}
-            
+
             with open(file_path, mode='r', encoding='utf-8') as file_obj:
                 data = json.load(file_obj)
 
