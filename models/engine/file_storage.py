@@ -4,6 +4,7 @@ File storage.
 Provides FileStorage class to store and retrive instances/objects
 '''
 
+import json
 
 class FileStorage():
     '''File storage class.
@@ -29,7 +30,13 @@ class FileStorage():
     
     def save(self):
         '''Serializes __objects to the JSON file (path: __file_path)'''
-        pass
+        file_path = FileStorage.__file_path
+        data = {}
+        for key,obj in FileStorage.__objects.items():
+            data[key] = obj.to_dict()
+        
+        with open(file_path, mode='w', encoding='utf-8') as file_obj:
+            json.dump(data, file_obj)
     
     def reload(self):
         '''
