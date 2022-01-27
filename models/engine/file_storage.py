@@ -13,7 +13,7 @@ class FileStorage():
 
     '''
     #: path to the JSON file ex: file.json
-    __file_path = 'data.json'
+    __file_path = './data/file_db.json'
 
     #: Stores all objects by <class name>.id ex: BaseModel.12121212
     __objects = {}
