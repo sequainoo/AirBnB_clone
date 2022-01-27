@@ -13,12 +13,33 @@ class BaseModel(object):
         created_at (datetime): Date and time created
         updated_at (datetime): Date and time updated
 
+    Args:
+            *args: (null)
+            **kwargs: (id=None, created_at=None, updated_at=None)
+
     '''
 
-    def __init__(self):
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = self.created_at
+    def __init__(self, *args, **kwargs):
+        if not kwargs:
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.now()
+            self.updated_at = self.created_at
+        else:
+            for attr, value in kwargs.items():
+                if attr == '__class__':
+                    continue
+                if attr in ['created_at', 'updated_at']:
+                    date = kwargs[attr]
+                    self.__dict__[attr] = datetime.fromisoformat(date)
+                else:
+                    self.__dict__[attr] = kwargs[attr]
+
+            if 'id' not in kwargs:
+                self.id = str(uuid.uuid4())
+            if 'created_at' not in kwargs:
+                self.created_at = datetime.now()
+            if 'updated_at' not in kwargs:
+                self.updated_at = datetime.now()
 
     def __str__(self):
         '''Format: [<class name>] (<self.id>) <self.__dict__>.'''
