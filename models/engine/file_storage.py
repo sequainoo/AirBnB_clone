@@ -13,14 +13,14 @@ class FileStorage():
 
     '''
     #: path to the JSON file ex: file.json
-    __file_path = ''
+    __file_path = 'data.json'
 
     #: Stores all objects by <class name>.id ex: BaseModel.12121212
     __objects = {}
 
     def all(self):
         '''Returns the dictionary __objects.'''
-        pass
+        return self.__class__.__objects
     
     def new(self, obj):
         '''Sets in __objects the obj with key <obj class name>.id.'''
