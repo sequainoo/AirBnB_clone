@@ -3,7 +3,7 @@
 from datetime import datetime
 import uuid
 from pprint import pprint, pformat
-import storage
+import models
 
 
 class BaseModel(object):
@@ -25,7 +25,7 @@ class BaseModel(object):
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = self.created_at
-            storage.new(self)
+            models.storage.new(self)
         else:
             for attr, value in kwargs.items():
                 if attr == '__class__':
@@ -45,17 +45,15 @@ class BaseModel(object):
 
     def __str__(self):
         '''Format: [<class name>] (<self.id>) <self.__dict__>.'''
-        format_str = '[{}] ({}) {}'
         cls_name = self.__class__.__name__
         _id = self.id
         _dict = pformat(self.__dict__)
-        format_str.format(cls_name, _id, _dict)
-        return format_str
+        return '[{}] ({}) {}'.format(cls_name, _id, _dict)
 
     def save(self):
         '''Currently Updates updated_at attribute.'''
         self.updated_at = datetime.now()
-        storage.save()
+        # models.storage.save()
 
     def to_dict(self):
         '''Returns a dictionary with all in __dict__ plus key __class__.'''
