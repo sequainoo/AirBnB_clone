@@ -58,6 +58,26 @@ class HBNBCommand(cmd.Cmd):
             print('** no instance found **')
         else:
             print(models.storage.all()[search_key])
+    
+    def do_destroy(self, args):
+        '''Deletes an instance based on the class name and id, saves changes to file.'''
+        class_name, _id = args.split()
+
+        if not class_name:
+            print('** class name missing **')
+            return
+        if class_name not in CLASSNAMES:
+            print('** class doesn\'t exist ** ')
+            return
+        if not id:
+            print('** instance id missing **')
+            return
+        search_key = '{}.{}'.format(class_name,_id)
+        if not search_key in models.storage.all():
+            print('** no instance found **')
+        else:
+            models.storage.all().pop(search_key)
+            models.storage.save()
 
     # @staticmethod
     # def alert_invalid_input(class_name):
