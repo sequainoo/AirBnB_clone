@@ -41,6 +41,23 @@ class HBNBCommand(cmd.Cmd):
             instance.save()
             print(instance.id)
 
+    def do_show(self, args):
+        '''Prints the str representation of an instance based on class name and id.'''
+        class_name, _id = args.split()
+        if not class_name:
+            print('** class name missing **')
+            return
+        if class_name not in CLASSNAMES:
+            print('** class doesn\'t exist ** ')
+            return
+        if not id:
+            print('** instance id missing **')
+            return
+        search_key = '{}.{}'.format(class_name,_id)
+        if not search_key in models.storage.all():
+            print('** no instance found **')
+        else:
+            print(models.storage.all()[search_key])
 
     # @staticmethod
     # def alert_invalid_input(class_name):
