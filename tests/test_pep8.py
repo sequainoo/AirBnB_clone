@@ -17,7 +17,8 @@ class TestPep8(unittest.TestCase):
             'tests/test_models/__init__.py',
             'tests/test_models/test_base_model.py',
             'models/engine/__init__.py',
-            'models/engine/file_storage.py'
+            'models/engine/file_storage.py',
+            'console.py'
             ]
         errors = style.check_files(files).total_errors
         self.assertEqual(errors, 0, "fix pep8")

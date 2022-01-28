@@ -9,6 +9,7 @@ import models
 CLASSNAMES = {
     'BaseModel': models.base_model.BaseModel
 }
+storage = models.storage
 
 
 class HBNBCommand(cmd.Cmd):
@@ -43,50 +44,70 @@ class HBNBCommand(cmd.Cmd):
 
     def do_show(self, args):
         '''Prints the str representation of an instance based on class name and id.'''
-        class_name, _id = args.split()
-        if not class_name:
-            print('** class name missing **')
+        args =  self.parse_args_2(args)
+        if args is None:
             return
-        if class_name not in CLASSNAMES:
-            print('** class doesn\'t exist ** ')
-            return
-        if not id:
-            print('** instance id missing **')
-            return
-        search_key = '{}.{}'.format(class_name,_id)
-        if not search_key in models.storage.all():
-            print('** no instance found **')
-        else:
-            print(models.storage.all()[search_key])
+        class_name, _id = args
+        search_key = key_from_storage(class_name, _id)
+        print(storage.all()[search_key])
     
     def do_destroy(self, args):
         '''Deletes an instance based on the class name and id, saves changes to file.'''
-        class_name, _id = args.split()
-
+        args =  self.parse_args_2(args)
+        if args is None:
+            return
+        class_name, _id = args
+        search_key = key_from_storage(class_name, _id)
+        storage.all().pop(search_key)
+        storage.save()
+    
+    def do_all(self, class_name):
+        '''Prints str representation of all instances based on or not on class name.'''
+        _list = []
         if not class_name:
+            for key, instance in storage.all().items():
+                _list.append(str(instance))
+            print(_list)
+            return
+        if class_name in CLASSNAMES:
+            for key, instance in storage.all().items():
+                if key.startswith(class_name):
+                    _list.append(str(instance))
+            print(_list)
+        else:
+            print('** class doesn\'t exist **')
+
+    @staticmethod
+    def parse_args_2(args):
+        '''Parses the command arguments of 2.
+        
+        Returns:
+            tuple: Tuple of 2 the class name and id, if valid arguments
+            None: if valid arguments
+        '''
+        if not args:
             print('** class name missing **')
             return
+        args = args.split()
+        if len(args) < 2:
+            print('** instance id missing **')
+            return
+        else:
+            class_name, _id = args
+
         if class_name not in CLASSNAMES:
             print('** class doesn\'t exist ** ')
             return
-        if not id:
-            print('** instance id missing **')
-            return
-        search_key = '{}.{}'.format(class_name,_id)
-        if not search_key in models.storage.all():
+        search_key = HBNBCommand.key_from_storage(class_name,_id)
+        if not search_key in storage.all():
             print('** no instance found **')
-        else:
-            models.storage.all().pop(search_key)
-            models.storage.save()
+            return
+        return class_name, _id
 
-    # @staticmethod
-    # def alert_invalid_input(class_name):
-    #     '''Prints error message on invalid arguments.'''
-
-    # @staticmethod
-    # def exists(class_name, _id):
-    #     '''Checks for existence of instance with id and class name.'''
-    #     pass
+    @staticmethod
+    def key_from_storage(class_name, _id):
+        '''Returns the Classname.id format key from the storage.'''
+        return '{}.{}'.format(class_name,_id)
 
 
 def main():
