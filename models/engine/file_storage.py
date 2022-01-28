@@ -44,8 +44,13 @@ class FileStorage():
         for key, obj in FileStorage.__objects.items():
             data[key] = obj.to_dict()
 
+        if not os.path.exists(file_path):
+            try:
+                os.makedirs(os.path.dirname(file_path))
+            except FileExistsError:
+                pass
         with open(file_path, mode='w', encoding='utf-8') as file_obj:
-            json.dump(data, file_obj)
+            json.dump(data, file_obj, indent=4)
 
     def reload(self):
         '''
@@ -57,7 +62,10 @@ class FileStorage():
             data = {}
 
             with open(file_path, mode='r', encoding='utf-8') as file_obj:
-                data = json.load(file_obj)
+                try:
+                    data = json.load(file_obj)
+                except json.decoder.JSONDecodeError:
+                    return
 
             for key, _dict in data.items():
                 _class = FileStorage.__CLASSES[_dict['__class__']]
