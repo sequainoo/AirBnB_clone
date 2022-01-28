@@ -48,7 +48,7 @@ class HBNBCommand(cmd.Cmd):
         if args is None:
             return
         class_name, _id = args
-        search_key = key_from_storage(class_name, _id)
+        search_key = self.key_from_storage(class_name, _id)
         print(storage.all()[search_key])
     
     def do_destroy(self, args):
@@ -57,7 +57,7 @@ class HBNBCommand(cmd.Cmd):
         if args is None:
             return
         class_name, _id = args
-        search_key = key_from_storage(class_name, _id)
+        search_key = self.key_from_storage(class_name, _id)
         storage.all().pop(search_key)
         storage.save()
     
@@ -76,6 +76,58 @@ class HBNBCommand(cmd.Cmd):
             print(_list)
         else:
             print('** class doesn\'t exist **')
+
+    def do_update(self, args):
+        '''Updates an instance based on class name and id.'''
+        args = self.parse_args_for_update(args)
+        if args is None:
+            return
+        class_name, _id, attr_name, attr_value = args
+        search_key = self.key_from_storage(class_name, _id)
+        obj = self.find_obj(search_key)
+        if obj is None:
+            return
+        existing_attr = getattr(obj, attr_name, None)
+        if existing_attr is None:
+            setattr(obj, attr_name, attr_value)
+        else:
+            attr_value = type(existing_attr)(attr_value)
+            setattr(obj, attr_name, attr_value)
+        storage.save()
+
+    @staticmethod
+    def find_obj(key):
+        return storage.all().get(key, None)
+
+    @staticmethod
+    def parse_args_for_update(args):
+        '''Parse args line <class name> <id> <attr name> "<attr value>".'''
+        line = args
+        if not args:
+            print('** class name missing **')
+            return
+        args = args.split()
+        if len(args) < 2:
+            print('** instance id missing **')
+            return
+        if len(args) < 3:
+            print('** attribute name missing **')
+            return
+        if len(args) < 4:
+            print('** value missing **')
+            return
+        class_name, _id, attr_name = args[:3]
+        start = line.index('"') + 1
+        end = line.index('"', start)
+        attr_value = line[start:end]
+        
+        if class_name not in CLASSNAMES:
+            print('** class doesn\'t exist **')
+            return
+        if HBNBCommand.key_from_storage(class_name, _id) not in storage.all():
+            print('** no instance found **')
+            return
+        return class_name, _id, attr_name, attr_value                
 
     @staticmethod
     def parse_args_2(args):
