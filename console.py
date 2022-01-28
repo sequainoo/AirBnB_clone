@@ -3,60 +3,33 @@
 
 
 import cmd
-import sys
-import os
 
 
-class BashCLI(cmd.Cmd):
-    '''Interprets bash commands.
+class HBNBCommand(cmd.Cmd):
+    '''The Console'''
 
-    bash python3 -m unittest discover tests
-    '''
-
-    def do_bash(self, line):
-        '''
-        Execute bash/shell commands.
-        Usage:
-            bash [cmdname] [-optionflags] [parameter [...]]
-        
-        Example:
-            bash python3 -m unittest discover tests
-        '''
-        if line:
-            os.system(line)
-    
-
-class Console(BashCLI):
     prompt = '(hbnb) '
-    # intro = ' .---------------------------.\n'
-    # intro += '|    Welcome to hbnb CLI!     |\n'
-    # intro += '|    for help, input `help`   |\n'
-    # intro += '|    for quit, input `quit`   |\n'
-    # intro += ' `---------------------------`\n'
-    
+
     def do_quit(self, inp):
-        '''Quit the console ((hbnb) quit)'''
-        # print()
+        '''
+        Quits the console.
+        Usage: quit
+        '''
         return True
 
     def do_EOF(self, inp):
-        '''Handles EOF signal.'''
-        return self.do_quit(inp)
-    
-
-    
-
-    
+        '''
+        Quits the console.
+        Usage: ctrl + d.
+        '''
+        return True
 
 
 def main():
-    if len(sys.argv) > 1:
-        # run in non interactive mode
-        string = ' '.join(sys.argv[1:])
-        Console().onecmd(string)
-    else:
-        # run in interactive mode
-        Console().cmdloop()
+    '''entry point into the interpreter and the logic.'''
+    console = HBNBCommand()
+    console.cmdloop()
+
 
 if __name__ == '__main__':
     main()
