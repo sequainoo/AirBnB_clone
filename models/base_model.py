@@ -53,7 +53,7 @@ class BaseModel(object):
     def save(self):
         '''Currently Updates updated_at attribute.'''
         self.updated_at = datetime.now()
-        # models.storage.save()
+        models.storage.save()
 
     def to_dict(self):
         '''Returns a dictionary with all in __dict__ plus key __class__.'''
