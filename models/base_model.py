@@ -3,6 +3,7 @@
 from datetime import datetime
 import uuid
 from pprint import pprint, pformat
+import storage
 
 
 class BaseModel(object):
@@ -24,15 +25,16 @@ class BaseModel(object):
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = self.created_at
+            storage.new(self)
         else:
             for attr, value in kwargs.items():
                 if attr == '__class__':
                     continue
                 if attr in ['created_at', 'updated_at']:
-                    date = kwargs[attr]
-                    self.__dict__[attr] = datetime.fromisoformat(date)
+                    date = datetime.fromisoformat(value)
+                    setattr(self, attr, date)
                 else:
-                    self.__dict__[attr] = kwargs[attr]
+                    setattr(self, attr, value)
 
             if 'id' not in kwargs:
                 self.id = str(uuid.uuid4())
@@ -53,6 +55,7 @@ class BaseModel(object):
     def save(self):
         '''Currently Updates updated_at attribute.'''
         self.updated_at = datetime.now()
+        storage.save()
 
     def to_dict(self):
         '''Returns a dictionary with all in __dict__ plus key __class__.'''
