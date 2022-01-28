@@ -6,7 +6,7 @@ Provides FileStorage class to store and retrive instances/objects
 
 import json
 import os
-from models import base_model
+from models import base_model, user
 
 
 class FileStorage():
@@ -19,7 +19,8 @@ class FileStorage():
 
     #: Class name and value pairs to help reload instances
     __CLASSES = {
-        'BaseModel': base_model.BaseModel
+        'BaseModel': base_model.BaseModel,
+        'User': user.User
     }
 
     #: path to the JSON file ex: file.json

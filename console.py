@@ -4,10 +4,12 @@
 
 import cmd
 import models
+from models import base_model, user
 
 
 CLASSNAMES = {
-    'BaseModel': models.base_model.BaseModel
+    'BaseModel': base_model.BaseModel,
+    'User': user.User
 }
 storage = models.storage
 
