@@ -115,6 +115,7 @@ class HBNBCommand(cmd.Cmd):
     def default(self, line):
         '''Handles commands like <cls name>.all().'''
         cmd = line.strip()
+
         # if cmd not like <cls name>.all() delegate to super().default()
         if cmd.endswith('.all()'):
             cmd = cmd.split('.')
@@ -127,13 +128,35 @@ class HBNBCommand(cmd.Cmd):
                     super().default(line)
             else:
                 super().default(line)
+        elif cmd.endswith('.count()'):
+            cmd = cmd.split('.')
+            if len(cmd) == 2:
+                class_name = cmd[0]
+                if class_name in CLASSNAMES:
+                    print(self.get_count_for_class(class_name))
+                else:
+                    super().default(line)
+            else:
+                super().default(line)
         else:
             super().default(line)
 
     @staticmethod
     def get_all_for_class(class_name):
         '''Gets all instances of class.'''
-        return [str(obj) for key, obj in storage.all().items() if key.startswith(class_name)]
+        return [
+            str(obj) for key, obj in storage.all().items()
+            if key.startswith(class_name)
+            ]
+
+    @staticmethod
+    def get_count_for_class(class_name):
+        '''Gets all instances of class.'''
+        count = 0
+        for key in storage.all():
+            if key.startswith(class_name):
+                count += 1
+        return count
 
     @staticmethod
     def find_obj(key):
