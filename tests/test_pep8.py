@@ -21,6 +21,7 @@ class TestPep8(unittest.TestCase):
             'console.py',
             'tests/test_models/test_state.py',
             'tests/test_models/test_city.py',
+            'tests/test_models/test_amenity.py',
             'models/state.py',
             'models/user.py',
             'models/review.py',
