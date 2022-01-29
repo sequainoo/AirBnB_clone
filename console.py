@@ -112,6 +112,29 @@ class HBNBCommand(cmd.Cmd):
             setattr(obj, attr_name, attr_value)
         storage.save()
 
+    def default(self, line):
+        '''Handles commands like <cls name>.all().'''
+        cmd = line.strip()
+        # if cmd not like <cls name>.all() delegate to super().default()
+        if cmd.endswith('.all()'):
+            cmd = cmd.split('.')
+            if len(cmd) == 2:
+                class_name = cmd[0]
+                if class_name in CLASSNAMES:
+                    print(self.get_all_for_class(class_name))
+                    return
+                else:
+                    super().default(line)
+            else:
+                super().default(line)
+        else:
+            super().default(line)
+
+    @staticmethod
+    def get_all_for_class(class_name):
+        '''Gets all instances of class.'''
+        return [str(obj) for key, obj in storage.all().items() if key.startswith(class_name)]
+
     @staticmethod
     def find_obj(key):
         return storage.all().get(key, None)
