@@ -45,26 +45,36 @@ class HBNBCommand(cmd.Cmd):
             print(instance.id)
 
     def do_show(self, args):
-        '''Prints the str representation of an instance based on class name and id.'''
-        args =  self.parse_args_2(args)
+        '''Prints the str representation of an instance.
+
+        Based on class name and id.
+        '''
+        args = self.parse_args_2(args)
         if args is None:
             return
         class_name, _id = args
         search_key = self.key_from_storage(class_name, _id)
         print(storage.all()[search_key])
-    
+
     def do_destroy(self, args):
-        '''Deletes an instance based on the class name and id, saves changes to file.'''
-        args =  self.parse_args_2(args)
+        '''Deletes an instance.
+
+        Based on the class name and id.
+        Saves changes to file.
+        '''
+        args = self.parse_args_2(args)
         if args is None:
             return
         class_name, _id = args
         search_key = self.key_from_storage(class_name, _id)
         storage.all().pop(search_key)
         storage.save()
-    
+
     def do_all(self, class_name):
-        '''Prints str representation of all instances based on or not on class name.'''
+        '''Prints str representation of all instances.
+
+        Based on or not on class name.
+        '''
         _list = []
         if not class_name:
             for key, instance in storage.all().items():
@@ -122,19 +132,19 @@ class HBNBCommand(cmd.Cmd):
         start = line.index('"') + 1
         end = line.index('"', start)
         attr_value = line[start:end]
-        
+
         if class_name not in CLASSNAMES:
             print('** class doesn\'t exist **')
             return
         if HBNBCommand.key_from_storage(class_name, _id) not in storage.all():
             print('** no instance found **')
             return
-        return class_name, _id, attr_name, attr_value                
+        return class_name, _id, attr_name, attr_value
 
     @staticmethod
     def parse_args_2(args):
         '''Parses the command arguments of 2.
-        
+
         Returns:
             tuple: Tuple of 2 the class name and id, if valid arguments
             None: if valid arguments
@@ -152,8 +162,8 @@ class HBNBCommand(cmd.Cmd):
         if class_name not in CLASSNAMES:
             print('** class doesn\'t exist ** ')
             return
-        search_key = HBNBCommand.key_from_storage(class_name,_id)
-        if not search_key in storage.all():
+        search_key = HBNBCommand.key_from_storage(class_name, _id)
+        if search_key not in storage.all():
             print('** no instance found **')
             return
         return class_name, _id
@@ -161,7 +171,7 @@ class HBNBCommand(cmd.Cmd):
     @staticmethod
     def key_from_storage(class_name, _id):
         '''Returns the Classname.id format key from the storage.'''
-        return '{}.{}'.format(class_name,_id)
+        return '{}.{}'.format(class_name, _id)
 
 
 def main():
