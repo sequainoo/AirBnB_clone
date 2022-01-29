@@ -20,6 +20,7 @@ class TestPep8(unittest.TestCase):
             'models/engine/file_storage.py',
             'console.py',
             'tests/test_models/test_state.py',
+            'tests/test_models/test_city.py',
             'models/state.py',
             'models/user.py',
             'models/review.py',

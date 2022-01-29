@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-'''Tests for State module.'''
+'''Tests for models/state.py.'''
 
 
 import unittest
