@@ -73,16 +73,6 @@ class TestBaseModel(AssertFunc):
         # assert that when created updated_at is same as created_at
         self.assertDatetimeEquals(inst.updated_at, inst.created_at)
 
-    def test_updated_at_after_save(self):
-        '''Test updated_at after update with save().'''
-        inst = BaseModel()
-        time_created = datetime.now()
-        inst.save()
-        now = datetime.now()
-        self.assertDatetimeEquals(inst.updated_at, now)
-        self.assertDatetimeNotEquals(inst.updated_at, time_created)
-        self.assertDatetimeGreater(inst.updated_at, time_created)
-
     # def test___str__(self):
     #     '''Test with expected format.
 

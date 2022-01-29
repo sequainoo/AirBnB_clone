@@ -51,7 +51,7 @@ class BaseModel(object):
         return '[{}] ({}) {}'.format(cls_name, _id, _dict)
 
     def save(self):
-        '''Currently Updates updated_at attribute.'''
+        '''Saves the instance to file using the storage.'''
         self.updated_at = datetime.now()
         models.storage.save()
 
