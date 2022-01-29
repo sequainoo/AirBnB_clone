@@ -4,12 +4,17 @@
 
 import cmd
 import models
-from models import base_model, user
+from models import base_model, user, state, review, place, city, amenity
 
 
 CLASSNAMES = {
     'BaseModel': base_model.BaseModel,
-    'User': user.User
+    'User': user.User,
+    'State': state.State,
+    'Review': review.Review,
+    'Place': place.Place,
+    'City': city.City,
+    'Amenity': amenity.Amenity
 }
 storage = models.storage
 

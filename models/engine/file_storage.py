@@ -8,6 +8,7 @@ import json
 import os
 from models import base_model, user, state, review, place, city, amenity
 
+
 class FileStorage():
     '''File storage class.
 
