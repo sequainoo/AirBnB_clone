@@ -118,45 +118,114 @@ class HBNBCommand(cmd.Cmd):
 
         # if cmd not like <cls name>.all() delegate to super().default()
         if cmd.endswith('.all()'):
-            cmd = cmd.split('.')
-            if len(cmd) == 2:
-                class_name = cmd[0]
-                if class_name in CLASSNAMES:
-                    print(self.get_all_for_class(class_name))
-                    return
-                else:
-                    super().default(line)
-            else:
-                super().default(line)
+            self.class_all(cmd.split('.')[0]) 
         elif cmd.endswith('.count()'):
-            cmd = cmd.split('.')
-            if len(cmd) == 2:
-                class_name = cmd[0]
-                if class_name in CLASSNAMES:
-                    print(self.get_count_for_class(class_name))
-                else:
-                    super().default(line)
-            else:
-                super().default(line)
+            self.class_count(cmd.split('.')[0])
+        elif self.is_class_dot_show(cmd):  # if it is classname.show() command
+            self.class_dot_show(*self.parse_class_dot_show_args(cmd))
+        elif self.is_class_dot_destroy(cmd):  # if is ClassName.destroy()
+            self.class_dot_destroy(*self.parse_class_dot_destroy_args(cmd))
         else:
             super().default(line)
 
-    @staticmethod
-    def get_all_for_class(class_name):
+    def class_all(self, class_name):
         '''Gets all instances of class.'''
-        return [
-            str(obj) for key, obj in storage.all().items()
-            if key.startswith(class_name)
-            ]
+        if class_name in CLASSNAMES:
+            _list = [
+                str(obj) for key, obj in storage.all().items()
+                if key.startswith(class_name)
+                ]
+            print(_list)
+        else:
+            super().default(class_name)
+    
+    def class_count(self, class_name):
+        '''Count number of instances of a class.'''
+        if class_name in CLASSNAMES:
+            count = 0
+            for key in storage.all():
+                if key.startswith(class_name):
+                    count += 1
+            print(count)
+        else:
+            super().default(class_name)
+
+    def class_dot_show(self, class_name, _id):
+        '''Retrieve an instance based on its id.'''
+        if class_name == '':
+            print('** class name missing **')
+        elif _id == '':
+            print('** instance id missing **')
+        else:
+            search_key = '{}.{}'.format(class_name, _id)
+            if search_key in storage.all():
+                print(str(storage.all()[search_key]))
+            else:
+                print('** no instance found **')
+
+    def parse_class_dot_show_args(self, cmd):
+        '''Retrieve class name and id.
+        From <class name>.show("id") like command.
+        '''
+        quote_1_idx = cmd.find('"')
+        quote_2_idx = cmd.find('"', quote_1_idx + 1)
+        _id = cmd[quote_1_idx + 1: quote_2_idx]
+        class_name = cmd.split('.')[0]
+        return class_name, _id
+
+    def parse_class_dot_destroy_args(self, cmd):
+        '''Retrieve class name and id.
+        From <class name>.destroy("id") like command.
+        '''
+        quote_1_idx = cmd.find('"')
+        quote_2_idx = cmd.find('"', quote_1_idx + 1)
+        _id = cmd[quote_1_idx + 1: quote_2_idx]
+        class_name = cmd.split('.')[0]
+        return class_name, _id
+
+    def class_dot_destroy(self, class_name, _id):
+        '''Retrieve an instance based on its id.'''
+        if class_name == '':
+            print('** class name missing **')
+        elif _id == '':
+            print('** instance id missing **')
+        else:
+            search_key = '{}.{}'.format(class_name, _id)
+            if search_key in storage.all():
+                storage.all().pop(search_key)
+                storage.save()
+            else:
+                print('** no instance found **')
 
     @staticmethod
-    def get_count_for_class(class_name):
-        '''Gets all instances of class.'''
-        count = 0
-        for key in storage.all():
-            if key.startswith(class_name):
-                count += 1
-        return count
+    def is_class_dot_show(cmd):
+        '''Determines if cmd is like <cls name>.show(id).'''
+
+        if '.show(' in cmd and ')' in cmd:
+            if cmd.count('(') == 1 and cmd.count(')') == 1:
+                # -2 because the diff btwn '(' and ')' must be at least 2
+                # to be valid like .show("") not .show()
+                if cmd.index('(') < cmd.index(')') - 2:
+                    if cmd.index(')') == len(cmd) - 1:
+                        if cmd[cmd.index('(') + 1] == '"':
+                            if cmd[cmd.index(')') - 1] == '"':
+                                return True
+        return False
+
+    @staticmethod
+    def is_class_dot_destroy(cmd):
+        '''Determines if cmd is like <cls name>.destroy("id").'''
+
+        if '.destroy(' in cmd and ')' in cmd:
+            if cmd.count('(') == 1 and cmd.count(')') == 1:
+                # -2 because the diff btwn '(' and ')' must be at least 2
+                # to be valid like .destroy("") not .destroy()
+                if cmd.index('(') < cmd.index(')') - 2:
+                    if cmd.index(')') == len(cmd) - 1:
+                        if cmd[cmd.index('(') + 1] == '"':
+                            if cmd[cmd.index(')') - 1] == '"':
+                                return True
+        return False
 
     @staticmethod
     def find_obj(key):
