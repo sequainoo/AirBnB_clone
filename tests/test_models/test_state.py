@@ -10,5 +10,6 @@ class TestState(unittest.TestCase):
     '''Tests for State model.'''
 
     def test_public_class_attribute_name(self):
+        '''Tests default value.'''
         self.assertEqual(state.State.name, '')
         self.assertEqual(state.State().name, '')

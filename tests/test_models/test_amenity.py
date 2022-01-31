@@ -10,5 +10,6 @@ class TestAmenity(unittest.TestCase):
     '''Tests for Amenity model.'''
 
     def test_public_class_attribute_name(self):
+        '''Tests name has default value of ''.'''
         self.assertEqual(amenity.Amenity.name, '')
         self.assertEqual(amenity.Amenity().name, '')

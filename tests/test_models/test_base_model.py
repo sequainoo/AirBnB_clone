@@ -89,6 +89,7 @@ class TestBaseModel(AssertFunc):
     #         self.assertEqual(string, expected)
 
     def test_to_dict_returns_a_dict(self):
+        '''Tests if to dict returns a dictionary.'''
         inst = BaseModel()
         self.assertTrue(isinstance(inst.to_dict(), dict))
 
