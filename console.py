@@ -266,7 +266,7 @@ class HBNBCommand(cmd.Cmd):
                 _dict = tmp[1].strip().replace('\'', '"')
                 try:
                     _dict = json.loads(_dict)
-                except:
+                except json.decoder.JSONDecodeError:
                     _dict = None
                 return cls_name, _id, _dict
         return None, None, None, None
