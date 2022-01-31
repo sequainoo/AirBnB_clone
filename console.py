@@ -127,7 +127,7 @@ class HBNBCommand(cmd.Cmd):
 
         # if cmd not like <cls name>.all() delegate to super().default()
         if cmd.endswith('.all()'):
-            self.class_dot_all(cmd.split('.')[0]) 
+            self.class_dot_all(cmd.split('.')[0])
         elif cmd.endswith('.count()'):
             self.class_dot_count(cmd.split('.')[0])
         elif self.is_class_dot_show(cmd):  # if it is classname.show() command
@@ -149,7 +149,7 @@ class HBNBCommand(cmd.Cmd):
             print(_list)
         else:
             super().default(cls_name)
-    
+
     def class_dot_count(self, cls_name):
         '''Count number of instances of a class.'''
         if cls_name in CLASSNAMES:
@@ -241,8 +241,8 @@ class HBNBCommand(cmd.Cmd):
         ClassName.update(id, attribute_name, "attribute_value").
         ClassName.update(id, <dictionary representation>)
         '''
-        line = cmd.replace('.', '%^', 1)  #replace the first dot and split there
-        line = line.split('%^')
+        line = cmd.replace('.', '%^', 1)  # replace
+        line = line.split('%^')  # split by that chars
         cls_name = line[0]
         args = line[1].replace('update(', '').replace(')', '')
         num_commas = args.count(',')
@@ -268,7 +268,7 @@ class HBNBCommand(cmd.Cmd):
                     _dict = json.loads(_dict)
                 except:
                     _dict = None
-                return cls_name, _id, _dict 
+                return cls_name, _id, _dict
         return None, None, None, None
 
     @staticmethod
