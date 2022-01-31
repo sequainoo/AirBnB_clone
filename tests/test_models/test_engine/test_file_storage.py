@@ -2,14 +2,24 @@
 
 
 import unittest
+import models
+from models import base_model
+from models.engine.file_storage import FileStorage
 
 
 class TestFileStorage(unittest.TestCase):
     '''Tests for the units of FileStorage.'''
 
-    def test_all(self):
-        '''Tests all method.
+    def test_new(self):
+        '''Tests new method.
 
-        The all method returns a list of all objects.
+        Checks that new object is added to storage.
         '''
-        pass
+        new_obj = base_model.BaseModel()
+        storage = FileStorage()
+        storage.new(new_obj)
+        for key, obj in storage.all().items():
+            if new_obj is obj:
+                self.assertTrue(True)
+                return
+        self.assertFalse(False)
