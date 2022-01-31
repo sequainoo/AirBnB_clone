@@ -5,6 +5,7 @@
 import cmd
 import models
 from models import base_model, user, state, review, place, city, amenity
+import json
 
 
 CLASSNAMES = {
@@ -38,14 +39,14 @@ class HBNBCommand(cmd.Cmd):
         '''Empty lines executes nothing.'''
         pass
 
-    def do_create(self, class_name):
+    def do_create(self, cls_name):
         '''Creates a new instance of BaseModel, saves it and prints the id.'''
-        if not class_name:
+        if not cls_name:
             print('** class name missing **')
-        elif class_name not in CLASSNAMES:
+        elif cls_name not in CLASSNAMES:
             print('** class doesn\'t exist ** ')
         else:
-            instance = CLASSNAMES[class_name]()
+            instance = CLASSNAMES[cls_name]()
             instance.save()
             print(instance.id)
 
@@ -56,8 +57,8 @@ class HBNBCommand(cmd.Cmd):
         args = self.parse_args_2(args)
         if args is None:
             return
-        class_name, _id = args
-        search_key = self.key_from_storage(class_name, _id)
+        cls_name, _id = args
+        search_key = self.get_search_key(cls_name, _id)
         print(storage.all()[search_key])
 
     def do_destroy(self, args):
@@ -69,24 +70,24 @@ class HBNBCommand(cmd.Cmd):
         args = self.parse_args_2(args)
         if args is None:
             return
-        class_name, _id = args
-        search_key = self.key_from_storage(class_name, _id)
+        cls_name, _id = args
+        search_key = self.get_search_key(cls_name, _id)
         storage.all().pop(search_key)
         storage.save()
 
-    def do_all(self, class_name):
+    def do_all(self, cls_name):
         '''Prints all instances based on or not on class name.
         all [<class name>]
         '''
         _list = []
-        if not class_name:
+        if not cls_name:
             for key, instance in storage.all().items():
                 _list.append(str(instance))
             print(_list)
             return
-        if class_name in CLASSNAMES:
+        if cls_name in CLASSNAMES:
             for key, instance in storage.all().items():
-                if key.startswith(class_name):
+                if key.startswith(cls_name):
                     _list.append(str(instance))
             print(_list)
         else:
@@ -94,30 +95,30 @@ class HBNBCommand(cmd.Cmd):
 
     def do_update(self, args):
         '''Updates an instance based on class name and id.
-        update <class name> <id> <attr name> "<attr value>"
+        update <class name> <id> <attr> "<value>"
         '''
         args = self.parse_args_for_update(args)
         if args is None:
             return
-        class_name, _id, attr_name, attr_value = args
-        search_key = self.key_from_storage(class_name, _id)
+        cls_name, _id, attr, value = args
+        search_key = self.get_search_key(cls_name, _id)
         obj = self.find_obj(search_key)
         if obj is None:
             print('** no instance found **')
             return
-        existing_attr = getattr(obj, attr_name, None)
+        existing_attr = getattr(obj, attr, None)
         if existing_attr is None:
-            setattr(obj, attr_name, attr_value)
+            setattr(obj, attr, value)
         else:
             _class = type(existing_attr)
             if _class is list:
-                if attr_value not in existing_attr:
+                if value not in existing_attr:
                     tmp_list = list(existing_attr)
-                    tmp_list.append(attr_value)
-                    setattr(obj, attr_name, tmp_list)
+                    tmp_list.append(value)
+                    setattr(obj, attr, tmp_list)
             else:
-                attr_value = _class(attr_value)
-                setattr(obj, attr_name, attr_value)
+                value = _class(value)
+                setattr(obj, attr, value)
         storage.save()
 
     def default(self, line):
@@ -138,37 +139,37 @@ class HBNBCommand(cmd.Cmd):
         else:
             super().default(line)
 
-    def class_dot_all(self, class_name):
+    def class_dot_all(self, cls_name):
         '''Gets all instances of class.'''
-        if class_name in CLASSNAMES:
+        if cls_name in CLASSNAMES:
             _list = [
                 str(obj) for key, obj in storage.all().items()
-                if key.startswith(class_name)
+                if key.startswith(cls_name)
                 ]
             print(_list)
         else:
-            super().default(class_name)
+            super().default(cls_name)
     
-    def class_dot_count(self, class_name):
+    def class_dot_count(self, cls_name):
         '''Count number of instances of a class.'''
-        if class_name in CLASSNAMES:
+        if cls_name in CLASSNAMES:
             count = 0
             for key in storage.all():
-                if key.startswith(class_name):
+                if key.startswith(cls_name):
                     count += 1
             print(count)
         else:
-            super().default(class_name)
+            super().default(cls_name)
 
     def class_dot_show(self, cmd):
         '''Retrieve an instance based on its id.'''
-        class_name, _id = self.parse_class_dot_show_args(cmd)
-        if class_name == '':
+        cls_name, _id = self.parse_class_dot_show_args(cmd)
+        if cls_name == '':
             print('** class name missing **')
         elif _id == '':
             print('** instance id missing **')
         else:
-            search_key = '{}.{}'.format(class_name, _id)
+            search_key = '{}.{}'.format(cls_name, _id)
             if search_key in storage.all():
                 print(str(storage.all()[search_key]))
             else:
@@ -181,8 +182,8 @@ class HBNBCommand(cmd.Cmd):
         quote_1_idx = cmd.find('"')
         quote_2_idx = cmd.find('"', quote_1_idx + 1)
         _id = cmd[quote_1_idx + 1: quote_2_idx]
-        class_name = cmd.split('.')[0]
-        return class_name, _id
+        cls_name = cmd.split('.')[0]
+        return cls_name, _id
 
     def parse_class_dot_destroy_args(self, cmd):
         '''Retrieve class name and id.
@@ -191,18 +192,18 @@ class HBNBCommand(cmd.Cmd):
         quote_1_idx = cmd.find('"')
         quote_2_idx = cmd.find('"', quote_1_idx + 1)
         _id = cmd[quote_1_idx + 1: quote_2_idx]
-        class_name = cmd.split('.')[0]
-        return class_name, _id
+        cls_name = cmd.split('.')[0]
+        return cls_name, _id
 
-    def class_dot_destroy(self, class_name, _id):
+    def class_dot_destroy(self, cls_name, _id):
         '''Destroys an instance based on its id.'''
-        class_name, _id = self.parse_class_dot_destroy_args(cmd)
-        if class_name == '':
+        cls_name, _id = self.parse_class_dot_destroy_args(cmd)
+        if cls_name == '':
             print('** class name missing **')
         elif _id == '':
             print('** instance id missing **')
         else:
-            search_key = '{}.{}'.format(class_name, _id)
+            search_key = '{}.{}'.format(cls_name, _id)
             if search_key in storage.all():
                 storage.all().pop(search_key)
                 storage.save()
@@ -213,32 +214,62 @@ class HBNBCommand(cmd.Cmd):
         '''Handles ClassName.update() commands
         <class name>.update(<id>, <attribute name>, <attribute value>).
         '''
-        cls_name, _id, attr_name, attr_value = self.parse_class_dot_update(cmd)
-        search_key = self.key_from_storage(cls_name, _id)
-        args = '{} {} {} "{}"'.format(cls_name, _id, attr_name, attr_value)
-        self.do_update(args)
+        parsed_data = self.parse_class_dot_update(cmd)
+        if None in parsed_data:
+            return super().default(cmd)
+        if len(parsed_data) == 4:
+            cls_name, _id, attr, value = parsed_data
+            args = '{} {} {} "{}"'.format(cls_name, _id, attr, value)
+            self.do_update(args)
+        else:
+            cls_name, _id, _dict = parsed_data
+            self.update_with_dict(cls_name, _id, _dict)
+
+    def update_with_dict(self, cls_name, _id, _dict):
+        '''Update object within storage with a dictionary'''
+        search_key = self.get_search_key(cls_name, _id)
+        obj = self.find_obj(search_key)
+        if obj is None:
+            print('** no instance **')
+        else:
+            for attr, value in _dict.items():
+                setattr(obj, attr, value)
+        storage.save()
 
     def parse_class_dot_update(self, cmd):
         '''Parses
         ClassName.update(id, attribute_name, "attribute_value").
+        ClassName.update(id, <dictionary representation>)
         '''
-        args = cmd.split('.')
-        cls_name = args[0]
-        part_2 = args[1].replace('update(', '').replace(')', '')
-        num_commas = part_2.count(',')
-        if num_commas < 2:
-            return cls_name, None, None, None
-        elif num_commas == 2:
-            _id, attr_name, attr_value = part_2.split(',')[0:]
-            _id = _id.strip()
-            attr_name = attr_name.strip()
-            attr_value = attr_value.strip().strip('"')
-            return cls_name, _id, attr_name, attr_value
+        line = cmd.replace('.', '%^', 1)  #replace the first dot and split there
+        line = line.split('%^')
+        cls_name = line[0]
+        args = line[1].replace('update(', '').replace(')', '')
+        num_commas = args.count(',')
+
+        if '{' not in args and '}' not in args:
+            if num_commas < 2:
+                return cls_name, None, None, None
+            elif num_commas == 2:
+                _id, attr, value = args.split(',')[0:]
+                _id = _id.strip()
+                attr = attr.strip()
+                value = value.strip().strip('"')
+                return cls_name, _id, attr, value
         else:
-            pass
-        # tmp_l = part_2.split(',')
-        # if len()
-        return cls_name, None, None, None
+            lbrace_idx, rbrace_idx = args.find('{'), args.find('}')
+            first_comma_idx = args.find(',')
+            if args[-1] == '}':
+                args = args.replace(',', '%^', 1)  # replace 1st
+                tmp = args.split('%^')
+                _id = tmp[0].strip().strip('"')
+                _dict = tmp[1].strip().replace('\'', '"')
+                try:
+                    _dict = json.loads(_dict)
+                except:
+                    _dict = None
+                return cls_name, _id, _dict 
+        return None, None, None, None
 
     @staticmethod
     def is_class_dot_show(cmd):
@@ -305,22 +336,22 @@ class HBNBCommand(cmd.Cmd):
         if len(args) < 4:
             print('** value missing **')
             return
-        class_name, _id, attr_name = args[:3]
+        cls_name, _id, attr = args[:3]
         start = line.find('"') + 1
         end = line.find('"', start)
         if start == 0 or end == -1:
             super().default(line)
             return
         else:
-            attr_value = line[start:end]
+            value = line[start:end]
 
-        if class_name not in CLASSNAMES:
+        if cls_name not in CLASSNAMES:
             print('** class doesn\'t exist **')
             return
-        if HBNBCommand.key_from_storage(class_name, _id) not in storage.all():
+        if HBNBCommand.get_search_key(cls_name, _id) not in storage.all():
             print('** no instance found **')
             return
-        return class_name, _id, attr_name, attr_value
+        return cls_name, _id, attr, value
 
     @staticmethod
     def parse_args_2(args):
@@ -338,21 +369,21 @@ class HBNBCommand(cmd.Cmd):
             print('** instance id missing **')
             return
         else:
-            class_name, _id = args
+            cls_name, _id = args
 
-        if class_name not in CLASSNAMES:
+        if cls_name not in CLASSNAMES:
             print('** class doesn\'t exist ** ')
             return
-        search_key = HBNBCommand.key_from_storage(class_name, _id)
+        search_key = HBNBCommand.get_search_key(cls_name, _id)
         if search_key not in storage.all():
             print('** no instance found **')
             return
-        return class_name, _id
+        return cls_name, _id
 
     @staticmethod
-    def key_from_storage(class_name, _id):
+    def get_search_key(cls_name, _id):
         '''Returns the Classname.id format key from the storage.'''
-        return '{}.{}'.format(class_name, _id)
+        return '{}.{}'.format(cls_name, _id)
 
 
 def main():
