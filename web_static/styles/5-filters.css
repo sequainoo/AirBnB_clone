@@ -27,8 +27,7 @@
     width: 25%;
     display: flex;
     flex-flow: column;
-    /* justify-content: center; */
-    /* padding-left: 4%; */
+    justify-content: center;
 }
 
 .locations {
@@ -37,13 +36,12 @@
 
 .locations h3, .amenities h3 {
     margin: auto auto 0;
-    margin-top: 10px;
     width: 70%;
     font-weight: 600;
 }
 
 .locations h4, .amenities h4 {
-    margin: 5px auto auto;
+    margin: 0 auto auto;
     font-weight: 400;
     min-width: 70%;
     font-size: 14px;
