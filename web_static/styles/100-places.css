@@ -54,50 +54,42 @@
  * ------ INFORMATION
  */
 
-.information {
-    clear: both;
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
-    align-items: flex-end;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
-    border-top: 1px solid #DDDDDD;
-    border-bottom: 1px solid #DDDDDD;
-    height: 80px;
-    text-align: center;
-}
-
-.information div {
-    width: 100px;
-    height: 100%;
-    background-repeat: no-repeat;
-    background-position: 50% 0px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-}
-
-.information div span{
-    padding-top: 5px;
-    position: relative;
-    top: 5px;
-}
+ .information {
+     clear: both;
+     display: flex;
+     flex-flow: row wrap;
+     justify-content: center;
+     align-items: flex-end;
+     padding-top: 10px;
+     padding-bottom: 10px;
+     margin-bottom: 10px;
+     border-top: 1px solid #DDDDDD;
+     border-bottom: 1px solid #DDDDDD;
+     height: 80px;
+ }
+ .information div {
+     width: 100px;
+ }
 
  /**
  * -- add icons to information div
  */
 .max_guest {
-    background-image: url("../images/icon_group.png");
+    background-image: url('');
+    background-repeat: no-repeat;
+    background-position: 50%;
 }
 
 .number_rooms {
-    background-image: url("../images/icon_bed.png");
+    background-image: url('');
+    background-repeat: no-repeat;
+    background-position: 50%;
 }
 
 .number_bathrooms{
-    background-image: url("../images/icon_bath.png");
+    background-image: url('');
+    background-repeat: no-repeat;
+    background-position: 50%;
 }
 
 /**
